@@ -1,0 +1,4 @@
+from .base import *
+
+SECRET_KEY = 'NOT_VERY_SECURE_DEVELOPMENT_SECRET_KEY'
+DEBUG = True

@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# Includes additional dependencies required during development
+# e.g. for executing unit tests

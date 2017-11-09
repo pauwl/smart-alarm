@@ -12,3 +12,4 @@ DATABASES['default'].update({
 })
 
 INSTALLED_APPS.append('django_extensions',)
+ALLOWED_HOSTS = ['10.0.2.2']

@@ -18,9 +18,9 @@ DJANGO_APPS = [
     'django.contrib.admin',
 ]
 THIRD_PARTY_APPS = [
-    'allauth',  # registration
-    'allauth.account',  # registration
-    'allauth.socialaccount',  # registration
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS
@@ -77,11 +77,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # OAuth
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+    )
+}
+
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.fitbit.FitbitOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Some really nice defaults
@@ -92,6 +101,17 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
 # ACCOUNT_ADAPTER = 'smart_alarm.users.adapters.AccountAdapter'
 # SOCIALACCOUNT_ADAPTER = 'smart_alarm.users.adapters.SocialAccountAdapter'
+
+TEMPLATES = [
+    {
+        'OPTIONS': {
+            'context_processors': [
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+            ],
+        },
+    }
+]
 
 # Custom user app defaults
 # Select the correct user model
@@ -113,3 +133,5 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+from .fitbit import *

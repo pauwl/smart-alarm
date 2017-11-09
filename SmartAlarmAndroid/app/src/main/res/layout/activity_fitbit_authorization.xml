@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.smart_alarm.pawl.smartalarmandroid.FitbitAuthorization">
+    tools:context="com.smart_alarm.pawl.smartalarmandroid.auth.FitbitAuthorizationActivity">
 
     <!-- Login progress -->
     <Button

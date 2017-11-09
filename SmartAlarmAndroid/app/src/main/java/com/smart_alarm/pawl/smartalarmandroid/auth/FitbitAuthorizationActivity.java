@@ -1,6 +1,7 @@
-package com.smart_alarm.pawl.smartalarmandroid;
+package com.smart_alarm.pawl.smartalarmandroid.auth;
 
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,11 +11,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
-import com.smart_alarm.pawl.smartalarmandroid.fitbit.FitbitProperties;
+
+import com.smart_alarm.pawl.smartalarmandroid.R;
+import com.smart_alarm.pawl.smartalarmandroid.properties.IRawProperties;
+import com.smart_alarm.pawl.smartalarmandroid.properties.smart_alarm.SmartAlarmProperties;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,13 +25,12 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
 
 
 /**
  * A login screen that offers login via email/password.
  */
-public class FitbitAuthorization extends AppCompatActivity {
+public class FitbitAuthorizationActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -82,32 +83,44 @@ public class FitbitAuthorization extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            String smartAlarmUrl;
+            URL smartAlarmClientIdUrl;
             StringBuilder fitbitClientIdBuilder = new StringBuilder();
             String fitbitClientId;
+            IRawProperties smartAlarmProperties = new SmartAlarmProperties();
             try {
-                smartAlarmUrl = FitbitProperties.getPropertyValue(
+                String smartAlarmUrl = smartAlarmProperties.getPropertyValue(
                         getApplicationContext(),
                         "smart_alarm_url");
+                String smartAlarmClientIdEndpoint = smartAlarmProperties.getPropertyValue(
+                        getApplicationContext(),
+                        "client_id_endpoint"
+                );
+                smartAlarmClientIdUrl = new URL(
+                        new URL(smartAlarmUrl),
+                        smartAlarmClientIdEndpoint);
             } catch (Resources.NotFoundException e) {
+                return null;
+            } catch (MalformedURLException e) {
+                Log.d(TAG, "Not valid URL to Smart Alarm server");
                 return null;
             }
 
+
             try {
-                URL url = new URL(smartAlarmUrl);
-                URLConnection urlConnection = url.openConnection();
+                URLConnection urlConnection = smartAlarmClientIdUrl.openConnection();
                 InputStream in = urlConnection.getInputStream();
                 BufferedReader inBuffered = new BufferedReader(new InputStreamReader(
                         in));
+
                 String readChars;
                 while ((readChars = inBuffered.readLine()) != null) {
                     fitbitClientIdBuilder.append(readChars);
                 }
-            } catch (MalformedURLException e) {
-                Log.d(TAG, "Not valid URL to Smart Alarm server");
-                return null;
+                in.close();
+
             } catch (IOException e) {
-                Log.d(TAG, "Failed to receive response from Fitbit Client ID endpoint");
+                Log.d(TAG, "Failed to receive response from" +
+                        " Fitbit Client ID endpoint\n" + e.getMessage());
                 return null;
             }
             fitbitClientId = fitbitClientIdBuilder.toString();
@@ -120,6 +133,7 @@ public class FitbitAuthorization extends AppCompatActivity {
 
             if (clientId != null) {
                 finish();
+
                 // TODO Open fitbit authorization page
             } else {
                 // TODO show dialog about error

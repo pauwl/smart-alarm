@@ -35,7 +35,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+DATABASES = {
+    'default': env.db(
+        'DATABASE_URL', default='postgres://smart_alarm_postgresql_host:5432/smart_alarm',),
+}
 DEBUG = env.bool('DJANGO_DEBUG', False)
 
 # URL Configuration
@@ -88,13 +91,26 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
-ACCOUNT_ADAPTER = 'smart_alarm.users.adapters.AccountAdapter'
-SOCIALACCOUNT_ADAPTER = 'smart_alarm.users.adapters.SocialAccountAdapter'
+# ACCOUNT_ADAPTER = 'smart_alarm.users.adapters.AccountAdapter'
+# SOCIALACCOUNT_ADAPTER = 'smart_alarm.users.adapters.SocialAccountAdapter'
 
 # Custom user app defaults
 # Select the correct user model
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = 'users:redirect'
 LOGIN_URL = 'account_login'
 
 ADMIN_URL = r'^admin/'
+
+# Internationalization
+# https://docs.djangoproject.com/en/1.11/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True

@@ -1,22 +1,7 @@
 ##### Requirements
 * Docker Engine
 * Docker Compose
-* Docker Machine and hypervisor (e.g. Virtualbox, Hyper-V) only for Windows and macOS hosts
-
-##### Creation of Docker Machine is required only for Windows and macOS hosts
-Configure docker machine
-
-```
-docker-machine create --driver virtualbox \
-    --virtualbox-cpu-count "2" \
-    --virtualbox-memory "4096" \
-    smart-alarm-machine
-``` 
-   
-To work with created docker machine execute  
-
-`docker-machine env smart-alarm-machine`  
-`eval $(docker-machine env smart-alarm-machine)`
+* Hypervisor (e.g. Virtualbox, Hyper-V) only for Windows and macOS hosts
 
 
 Available, pre-configured environments:

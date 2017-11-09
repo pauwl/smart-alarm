@@ -10,6 +10,6 @@ services:
     build:
       context: ./smart_alarm
     volumes:
-       - .:/app
+       - ./smart_alarm:/app
     links:
       - "postgresql:smart_alarm_postgresql_host"

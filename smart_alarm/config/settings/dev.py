@@ -10,3 +10,5 @@ DATABASES['default'].update({
     'HOST': 'smart_alarm_postgresql_host',
     'PORT': '5432',
 })
+
+INSTALLED_APPS.append('django_extensions',)

@@ -7,5 +7,6 @@ if [ $# -ne 0 ] ; then
     eval $*
 else
     python manage.py migrate --settings=config.settings.dev
-    python manage.py runserver 0.0.0.0:8000 --settings=config.settings.dev
+    echo "Starting server..."
+    python manage.py runserver_plus 0.0.0.0:8000 --settings=config.settings.dev
 fi

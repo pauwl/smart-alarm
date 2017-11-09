@@ -15,3 +15,5 @@ services:
        - ./smart_alarm:/app
     links:
       - "postgresql:smart_alarm_postgresql_host"
+    ports:
+      - "8000:8000"

@@ -10,9 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import com.smart_alarm.pawl.smartalarmandroid.properties.IRawProperties;
 import com.smart_alarm.pawl.smartalarmandroid.properties.fitbit.FitbitProperties;
 
-
 /**
- * A login screen that offers login via email/password.
+ * Allows User (Resource Owner) to authorize SmartAlarm app to
+ * access to Fitbit Web API on behalf of the User
  */
 public class FitbitAuthorizationPageActivity extends AppCompatActivity {
 
@@ -24,9 +24,10 @@ public class FitbitAuthorizationPageActivity extends AppCompatActivity {
     }
 
     /**
-     * Open Chrome Custom Tab on Fitbit OAuth 2.0 Authorization Page
+     * Opens Chrome Custom Tab with Fitbit OAuth 2.0 Authorization Page
      */
     private void openFitbitAuthPage(String fitbitClientId) {
+
         IRawProperties fitbitProperties = new FitbitProperties();
         String fitbitAuthPageUrlString = fitbitProperties.getPropertyValue(
                 getApplicationContext(),

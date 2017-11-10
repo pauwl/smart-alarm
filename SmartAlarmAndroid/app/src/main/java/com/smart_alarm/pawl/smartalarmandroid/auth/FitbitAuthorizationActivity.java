@@ -17,7 +17,6 @@ import android.widget.Button;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.smart_alarm.pawl.smartalarmandroid.auth.FitbitAuthorizationPageActivity;
 import com.smart_alarm.pawl.smartalarmandroid.R;
 import com.smart_alarm.pawl.smartalarmandroid.properties.IRawProperties;
 import com.smart_alarm.pawl.smartalarmandroid.properties.smart_alarm.SmartAlarmProperties;
@@ -29,12 +28,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Map;
 
 
-/**
- * A login screen that offers login via email/password.
- */
 public class FitbitAuthorizationActivity extends AppCompatActivity {
 
     /**
@@ -50,18 +45,16 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
         mAuthorizeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                getClientId();
             }
         });
 
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Retrieves SmartAlarm Client ID
      */
-    private void attemptLogin() {
+    private void getClientId() {
         if (mGetClientIdTask != null) {
             return;
         }
@@ -78,8 +71,8 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
+     * Represents an asynchronous task used to retrieve
+     * SmartAlarm Client ID required to grant access to Fitbit Web API.
      */
     public class GetClientIdTask extends AsyncTask<Void, Void, String> {
         private static final String TAG = "GetClientId";
@@ -91,7 +84,6 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
             URL smartAlarmClientIdUrl;
             StringBuilder fitbitClientIdBuilder = new StringBuilder();
             String fitbitClientId;

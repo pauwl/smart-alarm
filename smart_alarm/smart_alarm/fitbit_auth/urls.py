@@ -1,8 +1,9 @@
 from django.conf.urls import url
 
-from .views import ExchangeAuthorizationCode, FitbitClientId
+from smart_alarm.fitbit_auth.views.exchange_authorization_code_endpoint import ExchangeAuthorizationCode
+from smart_alarm.fitbit_auth.views.fitbit_client_id_endpoint import FitbitClientId
 
 urlpatterns = [
     url(r'client_id', view=FitbitClientId.as_view(), name='fitbit-client-id'),
-    url(r'$', view=ExchangeAuthorizationCode.as_view(), name='fitbit-exchange-auth-code'),
+    url(r'code', view=ExchangeAuthorizationCode.as_view(), name='fitbit-exchange-auth-code'),
 ]

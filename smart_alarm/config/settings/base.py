@@ -13,11 +13,13 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
 
     # Admin
     'django.contrib.admin',
 ]
 THIRD_PARTY_APPS = [
+    'rest_framework',
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
@@ -102,13 +104,47 @@ ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
 # ACCOUNT_ADAPTER = 'smart_alarm.users.adapters.AccountAdapter'
 # SOCIALACCOUNT_ADAPTER = 'smart_alarm.users.adapters.SocialAccountAdapter'
 
+# STATIC FILE CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = str(app_root('staticfiles'))
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+STATIC_URL = '/static/'
+
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+STATICFILES_DIRS = [
+    str(app_root.path('static')),
+]
+
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 TEMPLATES = [
     {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': STATICFILES_DIRS,
         'OPTIONS': {
             'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
+            'loaders':[
+                    ('django.template.loaders.cached.Loader', [
+                        'django.template.loaders.filesystem.Loader',
+                        'django.template.loaders.app_directories.Loader',
+                    ]),
+                ],
         },
     }
 ]

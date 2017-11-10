@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class ExchangeAuthorizationCode(APIView):
 
-    def post(self, request):
+    def get(self, request):
         """Endpoint for OAuth 2.0 Authorization Code flow
 
         Receive redirected response from Authorization Server (Fitbit)
@@ -21,7 +21,7 @@ class ExchangeAuthorizationCode(APIView):
         and returns Django token
         """
         try:
-            authorization_code = request.query_params['authorization_code']
+            authorization_code = request.query_params['code']
         except KeyError:
             error_msg = 'Missing required query parameters'
             logger.error(error_msg)
@@ -35,15 +35,5 @@ class ExchangeAuthorizationCode(APIView):
         token = fitbit_oauth_session.fetch_token(token_url=fitbit_access_token_url,
                                                  client_id=fitbit_client_id,
                                                  client_secret=fitbit_client_secret)
-
         # TODO exchange fitbit token with Django token
         return response.Response(status=status.HTTP_200_OK)
-
-
-class FitbitClientId(APIView):
-
-    def get(self, request):
-        fitbit_client_id = getattr(settings, 'SOCIAL_AUTH_FITBIT_KEY')
-
-        return response.Response(status=status.HTTP_200_OK,
-                                 data={'fitbit_client_id': fitbit_client_id})

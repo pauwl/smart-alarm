@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^auth/fitbit/?', include('smart_alarm.fitbit_auth.urls', namespace='fitbit-auth')),
+    url(r'^auth/fitbit/?',
+        include('smart_alarm.api.auth.fitbit.urls', namespace='fitbit-auth')),
     url(r'^auth/', include('rest_framework_social_oauth2.urls')),
 ]

@@ -1,6 +1,7 @@
 package com.smart_alarm.pawl.smartalarmandroid.auth;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.smart_alarm.pawl.smartalarmandroid.R;
 import com.smart_alarm.pawl.smartalarmandroid.properties.IRawProperties;
 import com.smart_alarm.pawl.smartalarmandroid.properties.smart_alarm.SmartAlarmProperties;
@@ -27,9 +30,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-/**
- * A login screen that offers login via email/password.
- */
 public class FitbitAuthorizationActivity extends AppCompatActivity {
 
     /**
@@ -41,23 +41,20 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fitbit_authorization);
-
         Button mAuthorizeButton = (Button) findViewById(R.id.authorize_button);
         mAuthorizeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                getClientId();
             }
         });
 
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Retrieves SmartAlarm Client ID
      */
-    private void attemptLogin() {
+    private void getClientId() {
         if (mGetClientIdTask != null) {
             return;
         }
@@ -68,21 +65,25 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
         } else {
-            mGetClientIdTask = new GetClientIdTask();
+            mGetClientIdTask = new GetClientIdTask((Context) this);
             mGetClientIdTask.execute((Void) null);
         }
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
+     * Represents an asynchronous task used to retrieve
+     * SmartAlarm Client ID required to grant access to Fitbit Web API.
      */
     public class GetClientIdTask extends AsyncTask<Void, Void, String> {
         private static final String TAG = "GetClientId";
+        Context activity = null;
+
+        GetClientIdTask(Context activity) {
+            this.activity = activity;
+        }
 
         @Override
         protected String doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
             URL smartAlarmClientIdUrl;
             StringBuilder fitbitClientIdBuilder = new StringBuilder();
             String fitbitClientId;
@@ -124,6 +125,14 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
                 return null;
             }
             fitbitClientId = fitbitClientIdBuilder.toString();
+            try {
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(fitbitClientId, JsonObject.class);
+                fitbitClientId = jsonObject.get( "fitbit_client_id").getAsString();
+            } catch (NullPointerException e) {
+                Log.d(TAG,"Cannot find Fitbit Client ID in response");
+                fitbitClientId = null;
+            }
             return fitbitClientId;
         }
 
@@ -133,8 +142,11 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
 
             if (clientId != null) {
                 finish();
-
-                // TODO Open fitbit authorization page
+                Intent fitbitAuthPageIntent = new Intent(
+                        activity,
+                        FitbitAuthorizationPageActivity.class);
+                fitbitAuthPageIntent.putExtra("fitbit_client_id", clientId);
+                startActivity(fitbitAuthPageIntent);
             } else {
                 // TODO show dialog about error
                 Log.d(TAG, TAG + " task failed");

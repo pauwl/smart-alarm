@@ -32,8 +32,9 @@ class ExchangeAuthorizationCode(APIView):
         fitbit_client_secret = settings.SOCIAL_AUTH_FITBIT_SECRET
         fitbit_app_client = BackendApplicationClient(client_id=fitbit_client_id)
         fitbit_oauth_session = OAuth2Session(client=fitbit_app_client)
-        token = fitbit_oauth_session.fetch_token(token_url=fitbit_access_token_url,
+        access_token = fitbit_oauth_session.fetch_token(token_url=fitbit_access_token_url,
                                                  client_id=fitbit_client_id,
-                                                 client_secret=fitbit_client_secret)
-        # TODO exchange fitbit token with Django token
+                                                 client_secret=fitbit_client_secret,
+                                                 code=authorization_code)
+        # TODO sign up with access_token and django-rest-framework-social-oauth2
         return response.Response(status=status.HTTP_200_OK)

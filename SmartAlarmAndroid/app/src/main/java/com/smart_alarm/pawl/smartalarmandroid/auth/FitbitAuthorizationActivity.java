@@ -1,6 +1,7 @@
 package com.smart_alarm.pawl.smartalarmandroid.auth;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.smart_alarm.pawl.smartalarmandroid.auth.FitbitAuthorizationPageActivity;
 import com.smart_alarm.pawl.smartalarmandroid.R;
 import com.smart_alarm.pawl.smartalarmandroid.properties.IRawProperties;
 import com.smart_alarm.pawl.smartalarmandroid.properties.smart_alarm.SmartAlarmProperties;
@@ -25,6 +29,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 
 
 /**
@@ -41,7 +46,6 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fitbit_authorization);
-
         Button mAuthorizeButton = (Button) findViewById(R.id.authorize_button);
         mAuthorizeButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -68,7 +72,7 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
         } else {
-            mGetClientIdTask = new GetClientIdTask();
+            mGetClientIdTask = new GetClientIdTask((Context) this);
             mGetClientIdTask.execute((Void) null);
         }
     }
@@ -79,6 +83,11 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
      */
     public class GetClientIdTask extends AsyncTask<Void, Void, String> {
         private static final String TAG = "GetClientId";
+        Context activity = null;
+
+        GetClientIdTask(Context activity) {
+            this.activity = activity;
+        }
 
         @Override
         protected String doInBackground(Void... params) {
@@ -124,6 +133,14 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
                 return null;
             }
             fitbitClientId = fitbitClientIdBuilder.toString();
+            try {
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(fitbitClientId, JsonObject.class);
+                fitbitClientId = jsonObject.get( "fitbit_client_id").getAsString();
+            } catch (NullPointerException e) {
+                Log.d(TAG,"Cannot find Fitbit Client ID in response");
+                fitbitClientId = null;
+            }
             return fitbitClientId;
         }
 
@@ -133,8 +150,11 @@ public class FitbitAuthorizationActivity extends AppCompatActivity {
 
             if (clientId != null) {
                 finish();
-
-                // TODO Open fitbit authorization page
+                Intent fitbitAuthPageIntent = new Intent(
+                        activity,
+                        FitbitAuthorizationPageActivity.class);
+                fitbitAuthPageIntent.putExtra("fitbit_client_id", clientId);
+                startActivity(fitbitAuthPageIntent);
             } else {
                 // TODO show dialog about error
                 Log.d(TAG, TAG + " task failed");
